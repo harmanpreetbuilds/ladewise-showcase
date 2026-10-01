@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vectra Hub | Operations Control</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">VH</div>
+        <div>
+          <div class="brand-name">Vectra Hub</div>
+          <div class="brand-sub">Operations Control</div>
+        </div>
+      </div>
+
+      <nav class="nav" id="nav">
+        <div class="nav-group-label">Workspace</div>
+        <button class="nav-item active" data-view="command"><span class="nav-dot"></span>Command</button>
+
+        <div class="nav-group-label">Operations</div>
+        <button class="nav-item" data-view="shipments"><span class="nav-icon">S</span>Shipments</button>
+        <button class="nav-item" data-view="customs"><span class="nav-icon">C</span>Customs</button>
+        <button class="nav-item" data-view="transport"><span class="nav-icon">T</span>GCC Transport</button>
+        <button class="nav-item" data-view="warehouse"><span class="nav-icon">W</span>Warehouse</button>
+        <button class="nav-item" data-view="exceptions"><span class="nav-icon">E</span>Exceptions</button>
+
+        <div class="nav-group-label">Records</div>
+        <button class="nav-item" data-view="activity"><span class="nav-icon">A</span>Activity</button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-avatar">HK</div>
+        <div>
+          <div class="user-name">Operations</div>
+          <div class="user-role">Dubai, UAE</div>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="search-wrap">
+          <span class="search-icon">⌕</span>
+          <input id="globalSearch" type="text" placeholder="Search shipment, customer, container, document..." />
+        </div>
+        <div class="topbar-right">
+          <button class="quiet-btn" id="todayBtn">Today</button>
+          <div class="divider"></div>
+          <div class="avatar">VH</div>
+        </div>
+      </header>
+
+      <section class="content" id="content"></section>
+    </main>
+  </div>
+
+  <template id="command-template">
+    <div class="page-head">
+      <div>
+        <div class="eyebrow">Operational workspace</div>
+        <h1>Command</h1>
+        <p>Customs clearance → GCC transport → freight movement → warehousing.</p>
+      </div>
+      <button class="primary-btn" data-action="new-shipment">New shipment</button>
+    </div>
+
+    <div class="context-strip">
+      <div><span class="label">Focus</span><span class="value">Shipments needing intervention</span></div>
+      <div><span class="label">Region</span><span class="value">UAE + GCC</span></div>
+      <div><span class="label">Last sync</span><span class="value">2 min ago</span></div>
+    </div>
+
+    <div class="workspace-grid">
+      <div class="workspace-main">
+        <div class="section-bar">
+          <div>
+            <h2>Active movements</h2>
+            <span>Every live shipment, current stage and next operational action.</span>
+          </div>
+          <div class="filters">
+            <button class="filter-btn active" data-filter="all">All</button>
+            <button class="filter-btn" data-filter="attention">Needs action</button>
+            <button class="filter-btn" data-filter="customs">Customs</button>
+            <button class="filter-btn" data-filter="warehouse">Warehouse</button>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table class="ops-table">
+            <thead>
+              <tr><th>Shipment</th><th>Customer</th><th>Route</th><th>Stage</th><th>Waiting on</th><th>Owner</th><th>Next action</th></tr>
+            </thead>
+            <tbody id="movementRows"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <aside class="attention-panel">
+        <div class="panel-head">
+          <div>
+            <h2>Needs action</h2>
+            <span>Only work requiring intervention.</span>
+          </div>
+          <span class="count" id="attentionCount"></span>
+        </div>
+        <div id="attentionList"></div>
+      </aside>
+    </div>
+
+    <div class="lower-detail" id="shipmentDetail"></div>
+  </template>
+
+  <template id="generic-template">
+    <div class="page-head">
+      <div>
+        <div class="eyebrow" id="genericEyebrow">Operations</div>
+        <h1 id="genericTitle"></h1>
+        <p id="genericSubtitle"></p>
+      </div>
+      <button class="primary-btn" id="genericPrimary">Add record</button>
+    </div>
+    <div class="section-bar standalone">
+      <div><h2 id="genericTableTitle"></h2><span id="genericTableSubtitle"></span></div>
+      <div class="filters"><button class="filter-btn active">Open</button><button class="filter-btn">All</button></div>
+    </div>
+    <div class="split-view">
+      <div class="table-wrap generic-table-wrap"><table class="ops-table"><thead id="genericHead"></thead><tbody id="genericBody"></tbody></table></div>
+      <aside class="inspector" id="genericInspector"></aside>
+    </div>
+  </template>
+
+  <script src="app.js"></script>
+</body>
+</html>
