@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Accurix Logistics | Operations Control</title>
+<style>
+:root{
+  --bg:#f4f6f8;--panel:#ffffff;--ink:#18202a;--muted:#657080;--nav:#0d1724;
+  --nav2:#13243a;--line:#e4e9ef;--blue:#174a7c;--blue2:#eaf2fb;--green:#14804a;
+  --greenbg:#eaf7ef;--amber:#a46605;--amberbg:#fff5df;--red:#b42318;--redbg:#feeeee;
+  --shadow:0 10px 24px rgba(13,23,36,.05);--radius:14px
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink);background:var(--bg)}
+.app{display:grid;grid-template-columns:232px minmax(0,1fr);min-height:100vh}
+.sidebar{background:var(--nav);color:#dce6f0;padding:18px 14px;display:flex;flex-direction:column;position:sticky;top:0;height:100vh}
+.brand{display:flex;align-items:center;gap:10px;padding:8px 8px 20px}
+.mark{width:30px;height:30px;border:2px solid #e5722f;border-right:0;border-radius:2px;position:relative}
+.mark:after{content:"";position:absolute;right:-8px;top:5px;width:12px;height:16px;border:2px solid #e5722f;border-left:0}
+.brand b{font-size:15px;letter-spacing:.12em;color:#fff}.brand small{display:block;font-size:10px;letter-spacing:.24em;color:#9eb0c3;margin-top:2px}
+.navlabel{font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:#74879a;padding:8px 10px}
+.nav a{display:flex;align-items:center;gap:10px;color:#c6d1dc;text-decoration:none;padding:11px 12px;border-radius:9px;margin:3px 0;font-size:14px}
+.nav a.active,.nav a:hover{background:var(--nav2);color:white}
+.doticon{width:20px;height:20px;border:1px solid #60748a;border-radius:6px;display:grid;place-items:center;font-size:11px}
+.sidebar-foot{margin-top:auto;border-top:1px solid #233243;padding:14px 8px 4px;font-size:12px;color:#9fb0c1}
+.sidebar-foot strong{display:block;color:#fff;margin-top:4px}
+.main{min-width:0}
+.topbar{height:70px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 26px;position:sticky;top:0;z-index:3}
+.search{width:min(440px,46vw);background:#f7f9fb;border:1px solid var(--line);border-radius:9px;padding:10px 13px;color:#7a8490;font-size:13px}
+.topmeta{display:flex;align-items:center;gap:14px;font-size:12px;color:var(--muted)}
+.avatar{width:34px;height:34px;border-radius:50%;background:#edf1f5;display:grid;place-items:center;font-weight:700;color:#3e4a56}
+.content{padding:24px 26px 34px}
+.head{display:flex;justify-content:space-between;gap:18px;align-items:flex-start;margin-bottom:18px}
+.head h1{font-size:27px;line-height:1.1;margin:0 0 6px}.head p{margin:0;color:var(--muted);font-size:14px}
+.actions{display:flex;gap:10px}
+button{border:1px solid var(--line);background:#fff;color:var(--ink);padding:10px 14px;border-radius:9px;font-weight:600;cursor:pointer}
+button.primary{background:#123f6c;color:#fff;border-color:#123f6c}
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:14px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+.kpi{padding:16px;display:flex;justify-content:space-between;align-items:center}
+.kpi strong{font-size:26px;display:block}.kpi span{font-size:12px;color:var(--muted)}
+.kpi .chip{font-size:11px;border-radius:999px;padding:5px 8px;font-weight:700}
+.pipeline{display:grid;grid-template-columns:repeat(6,1fr);margin-bottom:14px;overflow:hidden}
+.stage{background:#fff;border:1px solid var(--line);border-right:0;padding:12px 14px;position:relative}
+.stage:last-child{border-right:1px solid var(--line);border-radius:0 var(--radius) var(--radius) 0}.stage:first-child{border-radius:var(--radius) 0 0 var(--radius)}
+.stage b{font-size:12px;display:block}.stage strong{font-size:19px}.stage small{font-size:11px;color:var(--muted)}
+.stage.active{background:#edf4fb}
+.grid{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:14px}
+.panel{background:#fff;border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+.panelhead{padding:14px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between}
+.panelhead h2{font-size:16px;margin:0}.panelhead a{font-size:12px;color:var(--blue);text-decoration:none}
+.tabs{display:flex;gap:6px;padding:12px 14px 0}
+.tab{border:0;background:#f2f5f8;padding:8px 10px;border-radius:8px;color:#586372;font-size:12px}.tab.active{background:#eaf2fb;color:#144c7d}
+.tablewrap{overflow:auto}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{text-align:left;color:#5f6b78;background:#f8fafc;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:10px 12px;white-space:nowrap}
+td{padding:11px 12px;border-bottom:1px solid #edf0f3;white-space:nowrap}
+tr.clickable{cursor:pointer}tr.clickable:hover{background:#fafcff}tr.selected{background:#f4f8fd}
+.id{font-weight:700;color:#124f82}
+.status{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:5px 8px;font-size:11px;font-weight:700}
+.status:before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+.green{color:var(--green);background:var(--greenbg)}.amber{color:var(--amber);background:var(--amberbg)}.red{color:var(--red);background:var(--redbg)}.blue{color:#245d8e;background:var(--blue2)}
+.sidecol{display:grid;gap:14px;align-content:start}
+.alert{padding:13px 14px;border-bottom:1px solid var(--line)}.alert:last-child{border-bottom:0}
+.alerttop{display:flex;justify-content:space-between;gap:12px}.alert b{font-size:12px}.alert p{font-size:12px;margin:4px 0 0}.alert small{font-size:11px;color:var(--muted)}
+.alert.redline p{color:var(--red)}.alert.amberline p{color:var(--amber)}
+.bottom{display:grid;grid-template-columns:1.1fr .9fr;gap:14px;margin-top:14px}
+.detail{padding:16px}
+.jobtop{display:flex;align-items:center;gap:10px;margin-bottom:8px}.jobtop strong{font-size:15px}
+.route{font-size:12px;color:var(--muted);margin-bottom:14px}
+.detailgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.mini{border-left:2px solid #dce5ee;padding-left:10px}.mini small{display:block;color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px}.mini b{font-size:12px;display:block}.mini span{font-size:11px;color:#6f7884}
+.timeline{padding:14px 16px}.event{display:grid;grid-template-columns:14px 1fr;gap:8px;margin:0 0 12px}.event .bullet{width:8px;height:8px;border-radius:50%;background:#91a0b0;margin-top:4px}.event:first-child .bullet{background:var(--green)}.event b{font-size:12px;display:block}.event span{font-size:11px;color:var(--muted)}
+.demo-note{margin-top:14px;padding:12px 14px;border:1px dashed #cad5df;border-radius:10px;color:#607080;font-size:12px;background:#fbfcfd}
+.mobilebar{display:none}
+@media(max-width:1100px){.app{grid-template-columns:82px 1fr}.brand div,.nav span,.navlabel,.sidebar-foot{display:none}.brand{justify-content:center}.nav a{justify-content:center}.grid{grid-template-columns:1fr}.sidecol{grid-template-columns:1fr 1fr}.kpis{grid-template-columns:repeat(2,1fr)}.pipeline{grid-template-columns:repeat(3,1fr)}.bottom{grid-template-columns:1fr}}
+@media(max-width:700px){.app{display:block}.sidebar{display:none}.topbar{height:58px;padding:0 14px}.search{width:70%}.topmeta span{display:none}.content{padding:16px 12px 28px}.head{display:block}.actions{margin-top:12px}.kpis{grid-template-columns:1fr 1fr}.pipeline{grid-template-columns:1fr 1fr}.grid{display:block}.sidecol{display:grid;grid-template-columns:1fr;margin-top:14px}.detailgrid{grid-template-columns:1fr 1fr}.mobilebar{display:flex;position:fixed;bottom:0;left:0;right:0;background:#0d1724;color:#fff;padding:10px;justify-content:space-around;z-index:4}}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand"><div class="mark"></div><div><b>ACCURIX</b><small>LOGISTICS</small></div></div>
+    <div class="navlabel">Operations</div>
+    <nav class="nav">
+      <a class="active" href="#"><i class="doticon">⌂</i><span>Overview</span></a>
+      <a href="#"><i class="doticon">J</i><span>Jobs</span></a>
+      <a href="#"><i class="doticon">C</i><span>Containers</span></a>
+      <a href="#"><i class="doticon">D</i><span>Customs</span></a>
+      <a href="#"><i class="doticon">V</i><span>Vendors</span></a>
+      <a href="#"><i class="doticon">T</i><span>Deliveries</span></a>
+      <a href="#"><i class="doticon">!</i><span>Exceptions</span></a>
+      <a href="#"><i class="doticon">A</i><span>Activity</span></a>
+    </nav>
+    <div class="sidebar-foot">UAE | Dubai<strong>Accurix Logistics</strong></div>
+  </aside>
+  <main class="main">
+    <div class="topbar">
+      <div class="search">Search jobs, containers, clients or references...</div>
+      <div class="topmeta"><span>Dubai, UAE · Operations Control</span><div class="avatar">AL</div></div>
+    </div>
+    <div class="content">
+      <section class="head">
+        <div><h1>Operations Overview</h1><p>Freight, containers, customs, vendors and final delivery in one operational view.</p></div>
+        <div class="actions"><button>Export</button><button class="primary" onclick="alert('Demo action: create job')">+ Create Job</button></div>
+      </section>
+
+      <section class="kpis">
+        <div class="card kpi"><div><strong>24</strong><span>Active Jobs</span></div><span class="chip blue">Live</span></div>
+        <div class="card kpi"><div><strong>6</strong><span>Awaiting Clearance</span></div><span class="chip amber">Customs</span></div>
+        <div class="card kpi"><div><strong>8</strong><span>Deliveries Today</span></div><span class="chip green">On route</span></div>
+        <div class="card kpi"><div><strong>4</strong><span>Blocked Jobs</span></div><span class="chip red">Action</span></div>
+      </section>
+
+      <section class="pipeline card">
+        <div class="stage active"><b>1. Booking Confirmed</b><strong>24</strong><small>ready to move</small></div>
+        <div class="stage active"><b>2. Container Release</b><strong>19</strong><small>5 waiting</small></div>
+        <div class="stage active"><b>3. Customs Clearance</b><strong>16</strong><small>6 in review</small></div>
+        <div class="stage active"><b>4. Vendor Coordination</b><strong>14</strong><small>3 pending</small></div>
+        <div class="stage active"><b>5. Out for Delivery</b><strong>8</strong><small>today</small></div>
+        <div class="stage"><b>6. Delivered</b><strong>112</strong><small>this month</small></div>
+      </section>
+
+      <section class="grid">
+        <div class="panel">
+          <div class="panelhead"><h2>Active Shipments</h2><a href="#">Filter jobs</a></div>
+          <div class="tabs">
+            <button class="tab active">All Jobs (24)</button><button class="tab">Booking (3)</button><button class="tab">In Transit (5)</button><button class="tab">Customs (6)</button><button class="tab">Delivery (8)</button>
+          </div>
+          <div class="tablewrap">
+          <table>
+            <thead><tr><th>Job ID</th><th>Client</th><th>Route</th><th>Container</th><th>Status</th><th>Owner</th><th>Next Action</th><th>ETA</th></tr></thead>
+            <tbody>
+              <tr class="clickable selected" data-job="ACX-26010-001" data-client="Al Noor Trading" data-route="Shanghai → Jebel Ali" data-container="MSKU1234567 · 40HQ" data-owner="Fatima Al Mansoori" data-step="Customs Clearance" data-action="Submit Certificate of Origin" data-eta="03 Oct 2026"><td class="id">ACX-26010-001</td><td>Al Noor Trading</td><td>Shanghai → Jebel Ali</td><td>MSKU1234567</td><td><span class="status green">Customs Clearance</span></td><td>Fatima Al Mansoori</td><td>Submit COO</td><td>03 Oct</td></tr>
+              <tr class="clickable" data-job="ACX-26010-002" data-client="Blue Ridge FZE" data-route="Mumbai → Jebel Ali" data-container="TCKU7654321 · 20GP" data-owner="Rahil Khan" data-step="Container Release" data-action="Release from line" data-eta="02 Oct 2026"><td class="id">ACX-26010-002</td><td>Blue Ridge FZE</td><td>Mumbai → Jebel Ali</td><td>TCKU7654321</td><td><span class="status amber">Container Release</span></td><td>Rahil Khan</td><td>Release from line</td><td>02 Oct</td></tr>
+              <tr class="clickable" data-job="ACX-26010-003" data-client="Gulf Retail LLC" data-route="Shenzhen → Jebel Ali" data-container="CAIU9876543 · 40HQ" data-owner="Omar Hassan" data-step="Blocked" data-action="Collect missing customs document" data-eta="At risk"><td class="id">ACX-26010-003</td><td>Gulf Retail LLC</td><td>Shenzhen → Jebel Ali</td><td>CAIU9876543</td><td><span class="status red">Blocked</span></td><td>Omar Hassan</td><td style="color:#b42318">Missing document</td><td>At risk</td></tr>
+              <tr class="clickable" data-job="ACX-26010-004" data-client="Desert Build Co." data-route="Hamburg → Jebel Ali" data-container="HMMU3344556 · 40HQ" data-owner="Sara Ahmed" data-step="Out for Delivery" data-action="Confirm site delivery" data-eta="Today"><td class="id">ACX-26010-004</td><td>Desert Build Co.</td><td>Hamburg → Jebel Ali</td><td>HMMU3344556</td><td><span class="status green">Out for Delivery</span></td><td>Sara Ahmed</td><td>Delivery to site</td><td>Today</td></tr>
+              <tr class="clickable" data-job="ACX-26010-005" data-client="PetroChem ME" data-route="Houston → Jebel Ali" data-container="MSKU9988776 · 40HQ" data-owner="Ayesha Siddiqui" data-step="Vendor Coordination" data-action="Confirm delivery slot" data-eta="04 Oct 2026"><td class="id">ACX-26010-005</td><td>PetroChem ME</td><td>Houston → Jebel Ali</td><td>MSKU9988776</td><td><span class="status amber">Vendor Coordination</span></td><td>Ayesha Siddiqui</td><td>Confirm delivery slot</td><td>04 Oct</td></tr>
+              <tr class="clickable" data-job="ACX-26010-006" data-client="Skyline Projects" data-route="Singapore → Jebel Ali" data-container="TCLU5566778 · 20GP" data-owner="Hassan Ali" data-step="Customs Clearance" data-action="Duty payment approval" data-eta="03 Oct 2026"><td class="id">ACX-26010-006</td><td>Skyline Projects</td><td>Singapore → Jebel Ali</td><td>TCLU5566778</td><td><span class="status blue">Customs Clearance</span></td><td>Hassan Ali</td><td>Duty approval</td><td>03 Oct</td></tr>
+            </tbody>
+          </table>
+          </div>
+        </div>
+
+        <div class="sidecol">
+          <div class="panel">
+            <div class="panelhead"><h2>Exceptions & Blockers</h2><a href="#">View all</a></div>
+            <div class="alert redline"><div class="alerttop"><b>ACX-26010-003</b><small>18 min ago</small></div><p>Missing customs document, COO</p><small>Gulf Retail LLC · CAIU9876543</small></div>
+            <div class="alert redline"><div class="alerttop"><b>ACX-26010-011</b><small>46 min ago</small></div><p>Container release not received</p><small>TransExpo LLC · TCLU4455667</small></div>
+            <div class="alert amberline"><div class="alerttop"><b>ACX-26010-005</b><small>1h ago</small></div><p>Vendor confirmation pending</p><small>PetroChem ME · MSKU9988776</small></div>
+            <div class="alert amberline"><div class="alerttop"><b>ACX-26010-012</b><small>2h ago</small></div><p>Duty payment approval pending</p><small>Al Sahel General Trading</small></div>
+          </div>
+
+          <div class="panel">
+            <div class="panelhead"><h2>Today's Deliveries</h2><a href="#">8 total</a></div>
+            <div class="alert"><div class="alerttop"><b>ACX-26010-004</b><small>Dubai</small></div><p>Desert Build Co.</p><small>Jebel Ali → Dubai · Out for delivery</small></div>
+            <div class="alert"><div class="alerttop"><b>ACX-26010-009</b><small>Sharjah</small></div><p>Al Madar Trading</p><small>Jebel Ali → Sharjah · Out for delivery</small></div>
+            <div class="alert"><div class="alerttop"><b>ACX-26010-010</b><small>Abu Dhabi</small></div><p>Horizon International</p><small>Jebel Ali → Abu Dhabi · Out for delivery</small></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="bottom">
+        <div class="panel">
+          <div class="panelhead"><h2>Handoff & Next Action</h2><a href="#">Open shipment</a></div>
+          <div class="detail">
+            <div class="jobtop"><strong id="d-job">ACX-26010-001</strong><span class="status green" id="d-step">Customs Clearance</span></div>
+            <div class="route"><span id="d-route">Shanghai → Jebel Ali</span> · <span id="d-container">MSKU1234567 · 40HQ</span> · <span id="d-client">Al Noor Trading</span></div>
+            <div class="detailgrid">
+              <div class="mini"><small>Current step</small><b id="m-step">Customs Clearance</b><span>Declaration submitted</span></div>
+              <div class="mini"><small>Owned by</small><b id="m-owner">Fatima Al Mansoori</b><span>Operations</span></div>
+              <div class="mini"><small>Next action</small><b id="m-action">Submit Certificate of Origin</b><span>Waiting on document</span></div>
+              <div class="mini"><small>ETA</small><b id="m-eta">03 Oct 2026</b><span>handoff due</span></div>
+            </div>
+            <div class="demo-note">Prototype view for Accurix Logistics. The idea is to make every job's owner, blocker and next handoff visible without replacing the systems already in use.</div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panelhead"><h2>Activity Timeline</h2><a href="#">View all</a></div>
+          <div class="timeline">
+            <div class="event"><div class="bullet"></div><div><b>Customs declaration submitted</b><span>Fatima Al Mansoori · 17:12</span></div></div>
+            <div class="event"><div class="bullet"></div><div><b>Documents sent for customs review</b><span>Dubai Customs · 16:26</span></div></div>
+            <div class="event"><div class="bullet"></div><div><b>Container gate-in completed</b><span>Jebel Ali Port · 14:50</span></div></div>
+            <div class="event"><div class="bullet"></div><div><b>Vessel discharged</b><span>Operations update · 12:35</span></div></div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
+<div class="mobilebar"><span>Overview</span><span>Jobs</span><span>Exceptions</span></div>
+<script>
+document.querySelectorAll('tr.clickable').forEach(row=>{
+  row.addEventListener('click',()=>{
+    document.querySelectorAll('tr.clickable').forEach(r=>r.classList.remove('selected'));
+    row.classList.add('selected');
+    const d=row.dataset;
+    document.getElementById('d-job').textContent=d.job;
+    document.getElementById('d-client').textContent=d.client;
+    document.getElementById('d-route').textContent=d.route;
+    document.getElementById('d-container').textContent=d.container;
+    document.getElementById('d-step').textContent=d.step;
+    document.getElementById('m-step').textContent=d.step;
+    document.getElementById('m-owner').textContent=d.owner;
+    document.getElementById('m-action').textContent=d.action;
+    document.getElementById('m-eta').textContent=d.eta;
+    const badge=document.getElementById('d-step');
+    badge.className='status '+(d.step==='Blocked'?'red':(d.step.includes('Vendor')||d.step.includes('Release')?'amber':'green'));
+  });
+});
+document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));t.classList.add('active')});
+</script>
+</body>
+</html>
